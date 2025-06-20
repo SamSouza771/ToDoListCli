@@ -1,3 +1,5 @@
+namespace ToDoListCli;
+
 public class tarefa
 {
 	

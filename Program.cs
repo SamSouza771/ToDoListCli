@@ -10,23 +10,28 @@ class Program
     {
         // Verifica se a pasta e o arquivo existem e cria caso não exista
         var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        //Console.Write(path);
         var pathfdr = Path.Combine(path, "ToDoCli");
         var pathtsk = Path.Combine(pathfdr, "task.json");    
+
         if (!Directory.Exists(pathfdr)){
-            //Console.Write("passei");
             Directory.CreateDirectory(pathfdr);
         }
+
         if (!File.Exists(pathtsk)){
-            //Console.Write("passei");
             using (StreamWriter swriter = File.CreateText(pathtsk))
             {
                 swriter.WriteLine("[]"); 
             }
         }
 
-        
-
-        
+        List<tarefa> tarefas = new();        
+        try{
+        string conteudo = File.ReadAllText(pathtsk);
+        Console.Write(conteudo);
+        tarefas = JsonSerializer.Deserialize<List<tarefa>>(conteudo);
+        }
+        catch(Exception e){
+            Console.WriteLine(e.Message);
+        }
     }
 }
