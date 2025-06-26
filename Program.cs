@@ -24,14 +24,34 @@ class Program
             }
         }
 
-        List<tarefa> tarefas = new();        
+        List<tarefa> tarefas = new();
+        string conteudo = File.ReadAllText(pathtsk);       
         try{
-        string conteudo = File.ReadAllText(pathtsk);
-        Console.Write(conteudo);
+        
+        //Console.Write(conteudo);
         tarefas = JsonSerializer.Deserialize<List<tarefa>>(conteudo);
         }
         catch(Exception e){
             Console.WriteLine(e.Message);
         }
+
+        AddTask(tarefas, pathtsk);
+        Console.Write(conteudo);
+    }
+    static void AddTask(List<tarefa> tarefas, string path) {
+         
+        string titulo = AnsiConsole.Ask<string>("Digite o titúlo: ");
+        int novoId = tarefas.Any() ? tarefas.Max(t => t.Id) + 1 : 1;
+
+        tarefa novaTarefa = new() {
+            Id = novoId,
+            Name = titulo,
+            Status = false
+        };
+
+        tarefas.Add(novaTarefa);
+
+        string json = JsonSerializer.Serialize(tarefas, new JsonSerializerOptions {WriteIndented = true});
+        File.WriteAllText(path, json);
     }
 }
