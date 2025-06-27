@@ -25,9 +25,8 @@ class Program
         }
 
         List<tarefa> tarefas = new();
-        string conteudo = File.ReadAllText(pathtsk);       
         try{
-        
+        string conteudo = File.ReadAllText(pathtsk);        
         //Console.Write(conteudo);
         tarefas = JsonSerializer.Deserialize<List<tarefa>>(conteudo);
         }
@@ -36,11 +35,9 @@ class Program
         }
 
         AddTask(tarefas, pathtsk);
-        Console.Write(conteudo);
     }
     static void AddTask(List<tarefa> tarefas, string path) {
-         
-        string titulo = AnsiConsole.Ask<string>("Digite o titúlo: ");
+        string titulo = AnsiConsole.Ask<string>("Digite o título: ");
         int novoId = tarefas.Any() ? tarefas.Max(t => t.Id) + 1 : 1;
 
         tarefa novaTarefa = new() {
@@ -50,7 +47,10 @@ class Program
         };
 
         tarefas.Add(novaTarefa);
-
+        SaveTask(tarefas, path);
+        
+    }
+    static void SaveTask(List<tarefa> tarefas, string path){
         string json = JsonSerializer.Serialize(tarefas, new JsonSerializerOptions {WriteIndented = true});
         File.WriteAllText(path, json);
     }
