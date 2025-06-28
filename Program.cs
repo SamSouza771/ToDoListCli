@@ -8,7 +8,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        // Verifica se a pasta e o arquivo existem e cria caso não exista
+        // Check and create folder/file if needed
         var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         var pathfdr = Path.Combine(path, "ToDoCli");
         var pathtsk = Path.Combine(pathfdr, "task.json");    
@@ -24,120 +24,129 @@ class Program
             }
         }
 
-        List<tarefa> tarefas = new();
+        List<TaskItem> tasks = new();
         try{
-        string conteudo = File.ReadAllText(pathtsk);        
-        //Console.Write(conteudo);
-        tarefas = JsonSerializer.Deserialize<List<tarefa>>(conteudo);
+            string content = File.ReadAllText(pathtsk);        
+            tasks = JsonSerializer.Deserialize<List<TaskItem>>(content);
         }
         catch(Exception e){
             Console.WriteLine(e.Message);
         }
 
-        Menu(tarefas, pathtsk);
+        Menu(tasks, pathtsk);
     }
-    static void Menu(List<tarefa> tarefas, string path){
+
+    static void Menu(List<TaskItem> tasks, string path){
         var choice = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Choice:")
                 .PageSize(10)
-                .MoreChoicesText("[grey](Use ↑ ↓ para navegar)[/]")
+                .MoreChoicesText("[grey](Use ↑ ↓ to navigate)[/]")
                 .AddChoices(new[]{
-                    "Add Task", "List Tasks", "Check Tasks","Delete Tasks", "Exit"
+                    "Add Task", "List Tasks", "Check Tasks", "Delete Tasks", "Exit"
                 })
         );
 
         switch (choice){
             case "Add Task":
-                AddTask(tarefas, path);
-            break;
+                AddTask(tasks, path);
+                break;
             case "List Tasks":
-                ListTasks(tarefas, path);
-            break;
+                ListTasks(tasks, path);
+                break;
             case "Check Tasks":
-                var chkselected = SelectTasks(tarefas);
-                CheckTasks(chkselected, tarefas, path);
-            break;
+                var checkSelected = SelectTasks(tasks);
+                CheckTasks(checkSelected, tasks, path);
+                break;
             case "Delete Tasks":
-                var delselected = SelectTasks(tarefas);
-                DeleteTasks(delselected, tarefas, path);
-            break;
+                var deleteSelected = SelectTasks(tasks);
+                DeleteTasks(deleteSelected, tasks, path);
+                break;
             case "Exit":
                 Environment.Exit(0);
-            break;
+                break;
         }
     }
-    
-    static void AddTask(List<tarefa> tarefas, string path) {
-        string titulo = AnsiConsole.Ask<string>("Type the task title: ");
-        int novoId = tarefas.Any() ? tarefas.Max(t => t.Id) + 1 : 1;
 
-        tarefa novaTarefa = new() {
-            Id = novoId,
-            Name = titulo,
+    static void AddTask(List<TaskItem> tasks, string path) {
+        string title = AnsiConsole.Ask<string>("Type the task title: ");
+        int newId = tasks.Any() ? tasks.Max(t => t.Id) + 1 : 1;
+
+        TaskItem newTask = new() {
+            Id = newId,
+            Name = title,
             Status = false
         };
 
-        tarefas.Add(novaTarefa);
-        SaveTask(tarefas, path);
-        ListTasks(tarefas, path);
+        tasks.Add(newTask);
+        SaveTask(tasks, path);
+        ListTasks(tasks, path);
     }
-    
-    static void SaveTask(List<tarefa> tarefas, string path){
-        string json = JsonSerializer.Serialize(tarefas, new JsonSerializerOptions {WriteIndented = true});
+
+    static void SaveTask(List<TaskItem> tasks, string path){
+        string json = JsonSerializer.Serialize(tasks, new JsonSerializerOptions {WriteIndented = true});
         File.WriteAllText(path, json);
     }
 
-    static void ListTasks(List<tarefa> tarefas, string path){
+    static void ListTasks(List<TaskItem> tasks, string path){
         var table = new Table();
         table.AddColumn("ID");
-        table.AddColumn("Tarefa");
+        table.AddColumn("Task");
         table.AddColumn("Status");
 
-        foreach (var t in tarefas){
-            string status = t.Status ? "[green]Feita[/]" : "[red]Pendente[/]";
+        foreach (var t in tasks){
+            string status = t.Status ? "[green]Done[/]" : "[red]Pending[/]";
             table.AddRow(t.Id.ToString(), t.Name, status);
         }
         Console.Clear();
         AnsiConsole.Write(table);
-        SaveTask(tarefas, path);
-        Menu(tarefas, path);
+        SaveTask(tasks, path);
+        Menu(tasks, path);
     }
 
-    static List<string> SelectTasks(List<tarefa> tarefas){
+    static List<string> SelectTasks(List<TaskItem> tasks){
         var selected = AnsiConsole.Prompt(
             new MultiSelectionPrompt<string>()
-                .Title("Quais tarefas deseja marcar como feito? ")
+                .Title("Which tasks do you want to mark as done? ")
                 .NotRequired()
                 .PageSize(10)
-                .MoreChoicesText("[grey](Use ↑ ↓ para navegar)[/]")
-                .InstructionsText("[grey](Pressione Espaço para marcar e Enter para confirmar)[/]")
-                .AddChoices(tarefas.Select(t => $"{t.Id} - {t.Name}"))
+                .MoreChoicesText("[grey](Use ↑ ↓ to navigate)[/]")
+                .InstructionsText("[grey](Press Space to select and Enter to confirm)[/]")
+                .AddChoices(tasks.Select(t => $"{t.Id} - {t.Name}"))
         );
 
         return selected;
     }
 
-    static void CheckTasks(List<string> selected, List<tarefa> tarefas, string path){
+    static void CheckTasks(List<string> selected, List<TaskItem> tasks, string path){
         foreach(var item in selected){
-            var partes = item.Split(" - ");
-            int id = int.Parse(partes[0]);
+            var parts = item.Split(" - ");
+            int id = int.Parse(parts[0]);
 
-            var tarefaEncontrada =tarefas.Find(t => t.Id == id);
-            tarefaEncontrada.Status = true;
+            var foundTask = tasks.Find(t => t.Id == id);
+            if (foundTask != null)
+                foundTask.Status = true;
         }
-        ListTasks(tarefas, path);
+        ListTasks(tasks, path);
     }
 
-    static void DeleteTasks(List<string> selected, List<tarefa> tarefas, string path){
+    static void DeleteTasks(List<string> selected, List<TaskItem> tasks, string path){
         foreach(var item in selected){
-            var partes = item.Split(" - ");
-            int id = int.Parse(partes[0]);
+            var parts = item.Split(" - ");
+            int id = int.Parse(parts[0]);
 
-            var tarefaEncontrada =tarefas.Find(t => t.Id == id);
-            tarefas.Remove(tarefaEncontrada);
+            var foundTask = tasks.Find(t => t.Id == id);
+            if (foundTask != null)
+                tasks.Remove(foundTask);
         }
-        ListTasks(tarefas, path);
+        ListTasks(tasks, path);
     }
-    
 }
+
+public class TaskItem
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public bool Status { get; set; }
+}
+
