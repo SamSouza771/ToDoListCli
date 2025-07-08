@@ -1,6 +1,5 @@
 ﻿using Spectre.Console;
-using System.Text.Json;
-using System.IO; 
+using System.Text.Json; 
 
 namespace ToDoListCli;
 
@@ -71,10 +70,21 @@ class Program
     static void AddTask(List<TaskItem> tasks, string path) {
         string title = AnsiConsole.Ask<string>("Type the task title: ");
         int newId = tasks.Any() ? tasks.Max(t => t.Id) + 1 : 1;
-
+        var priority = AnsiConsole.Prompt(
+            new SelectionPrompt<Preference>()
+                .Title("Choice the priority for that task:")
+                .PageSize(10)
+                .MoreChoicesText("[grey](Use ↑ ↓ to navigate)[/]")
+                .AddChoices(Enum.GetValues(typeof(Preference))
+                    .Cast<Preference>()
+                    .ToList()
+                )
+        );
+        
         TaskItem newTask = new() {
             Id = newId,
             Name = title,
+            Priority = priority,
             Status = false
         };
 
@@ -92,11 +102,12 @@ class Program
         var table = new Table();
         table.AddColumn("ID");
         table.AddColumn("Task");
+        table.AddColumn("Priority");
         table.AddColumn("Status");
 
         foreach (var t in tasks){
             string status = t.Status ? "[green]Done[/]" : "[red]Pending[/]";
-            table.AddRow(t.Id.ToString(), t.Name, status);
+            table.AddRow(t.Id.ToString(), t.Name, t.Priority.ToString() , status);
         }
         Console.Clear();
         AnsiConsole.Write(table);
@@ -143,10 +154,15 @@ class Program
     }
 }
 
-public class TaskItem
-{
+public class TaskItem{
     public int Id { get; set; }
     public string Name { get; set; }
     public bool Status { get; set; }
+    public Preference Priority {get; set;}
+}
+public enum Preference{
+    high = 3,
+    mid = 2,
+    low = 1
 }
 
