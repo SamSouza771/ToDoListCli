@@ -111,7 +111,6 @@ class Program
         }
         Console.Clear();
         AnsiConsole.Write(table);
-        SaveTask(tasks, path);
         Menu(tasks, path);
     }
 
