@@ -68,8 +68,7 @@ class Program
     }
 
     static void AddTask(List<TaskItem> tasks, string path) {
-        string title = AnsiConsole.Ask<string>("Type the task title: ").Trim().Trim('[', ']');
-        
+        string title = AnsiConsole.Ask<string>("Type the task title: ").Trim(' ', '[', ']');
         int newId = tasks.Any() ? tasks.Max(t => t.Id) + 1 : 1;
         var priority = AnsiConsole.Prompt(
             new SelectionPrompt<Preference>()
