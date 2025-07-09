@@ -68,7 +68,8 @@ class Program
     }
 
     static void AddTask(List<TaskItem> tasks, string path) {
-        string title = AnsiConsole.Ask<string>("Type the task title: ");
+        string title = AnsiConsole.Ask<string>("Type the task title: ").Trim().Trim('[', ']');
+        
         int newId = tasks.Any() ? tasks.Max(t => t.Id) + 1 : 1;
         var priority = AnsiConsole.Prompt(
             new SelectionPrompt<Preference>()
@@ -117,7 +118,7 @@ class Program
     static List<string> SelectTasks(List<TaskItem> tasks){
         var selected = AnsiConsole.Prompt(
             new MultiSelectionPrompt<string>()
-                .Title("Which tasks do you want to mark as done? ")
+                .Title("Which tasks do you want to select? ")
                 .NotRequired()
                 .PageSize(10)
                 .MoreChoicesText("[grey](Use ↑ ↓ to navigate)[/]")
