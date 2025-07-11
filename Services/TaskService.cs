@@ -35,7 +35,7 @@ public class TaskService {
 	public void MarkAsDone(int id){
 		var task = Tasks.Find(t => t.Id == id);
 		if (task != null){
-			task.Status = true;
+			task.MarkAsDone();
 			Save();
 		}
 	}

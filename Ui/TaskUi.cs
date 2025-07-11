@@ -57,10 +57,7 @@ public class TaskUi {
         );
 
         var id = service.Tasks.Any() ? service.Tasks.Max(t => t.Id) + 1 : 1;
-        service.Add(new TaskItem { Id = id,
-            Name = title,
-            Priority = priority,
-            Status = false });
+        service.Add(new TaskItem(id, title, priority));
     }
 
     private void ListTasks()
