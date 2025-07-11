@@ -6,8 +6,8 @@ namespace ToDoListCli.Ui;
 
 public class TaskUi {
     private readonly TaskService service;
-    public TaskUi(TaskService _service){
-        service = _service;
+    public TaskUi(TaskService service){
+        this.service = service;
     }
     
     public void Run(){

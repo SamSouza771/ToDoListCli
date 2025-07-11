@@ -7,8 +7,8 @@ public class TaskService {
 	private readonly string filePath;
 	public List<TaskItem> Tasks {get; private set;}
 
-	public TaskService (string _filePath){
-		filePath = _filePath;
+	public TaskService (string filePath){
+		this.filePath = filePath;
 
 		var json = File.ReadAllText(filePath);
 		Tasks = JsonSerializer.Deserialize<List<TaskItem>>(json);
