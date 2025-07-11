@@ -4,14 +4,18 @@ using ToDoListCli.Services;
 
 namespace ToDoListCli.Ui;
 
-public class TaskUi {
+public class TaskUi
+{
     private readonly TaskService service;
-    public TaskUi(TaskService service){
+    public TaskUi(TaskService service)
+    {
         this.service = service;
     }
-    
-    public void Run(){
-        while(true){
+
+    public void Run()
+    {
+        while (true)
+        {
             Console.Clear();
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
@@ -22,7 +26,8 @@ public class TaskUi {
                     })
             );
 
-            switch (choice){
+            switch (choice)
+            {
                 case "Add Task":
                     AddTask();
                     break;
@@ -44,8 +49,8 @@ public class TaskUi {
                     break;
             }
         }
-	}
-	private void AddTask()
+    }
+    private void AddTask()
     {
         var title = AnsiConsole.Ask<string>("Task title:").Trim(' ', '[', ']');
         var priority = AnsiConsole.Prompt(
@@ -97,5 +102,5 @@ public class TaskUi {
             .ToList();
     }
 
-    
+
 }

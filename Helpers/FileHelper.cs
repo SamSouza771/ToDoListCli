@@ -1,19 +1,21 @@
 namespace ToDoListCli.Helpers;
 
-public static class FileHelper {
-	public static string EnsureStoragePath(){
-		var dir = Path.Combine(
-			Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-			"ToDoCli"
-		);
+public static class FileHelper
+{
+    public static string EnsureStoragePath()
+    {
+        var dir = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "ToDoCli"
+        );
 
-		Directory.CreateDirectory(dir);
+        Directory.CreateDirectory(dir);
 
-		var file = Path.Combine(dir, "Tasks.json");
+        var file = Path.Combine(dir, "Tasks.json");
 
-		if (!File.Exists(file))
-			File.WriteAllText(file, "[]");
+        if (!File.Exists(file))
+            File.WriteAllText(file, "[]");
 
-		return file; 
-	}
+        return file;
+    }
 }
