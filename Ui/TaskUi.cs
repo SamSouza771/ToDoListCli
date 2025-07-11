@@ -88,6 +88,7 @@ public class TaskUi {
         var selected = AnsiConsole.Prompt(
             new MultiSelectionPrompt<string>()
                 .Title("Select tasks:")
+                .NotRequired()
                 .AddChoices(service.Tasks.Select(t => $"{t.Id} - {t.Name}"))
         );
 
