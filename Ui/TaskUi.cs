@@ -50,6 +50,7 @@ public class TaskUi
             }
         }
     }
+        
     private void AddTask()
     {
         var title = AnsiConsole.Ask<string>("Task title:").Trim(' ', '[', ']');
@@ -102,5 +103,5 @@ public class TaskUi
             .ToList();
     }
 
-
+    
 }
